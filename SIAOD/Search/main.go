@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	arr := []int{1, 2, 3, 5, 7}
+	arr := []int{1, 2, 3, 5, 7, 19, 23, 30, 42}
 
 	tree := new(TreeNode)
 	for _, v := range arr {

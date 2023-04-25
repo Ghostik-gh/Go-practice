@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 type Coords struct {
@@ -10,11 +11,13 @@ type Coords struct {
 }
 
 func main() {
-
+	start := time.Now()
 	count := 0
+	tries := 0
 	coords := []Coords{}
 	board := [][]int{}
 	for count != 8 {
+		tries++
 		ans := Coords{}
 		coords = []Coords{}
 		count = 0
@@ -51,9 +54,9 @@ func main() {
 				count++
 			}
 		}
+		fmt.Printf("count: %v\n", count)
+		fmt.Printf("ans: %v\n", coords)
 	}
-	fmt.Printf("count: %v\n", count)
-	fmt.Printf("ans: %v\n", coords)
 
 	board = [][]int{}
 	for i := 0; i < 8; i++ {
@@ -68,4 +71,7 @@ func main() {
 	for _, v := range board {
 		fmt.Printf("%v\n", v)
 	}
+	fmt.Printf("tries: %v\n", tries)
+	duration := time.Since(start)
+	fmt.Printf("duration: %v\n", duration)
 }

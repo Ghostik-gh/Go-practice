@@ -13,6 +13,10 @@ type TreeNode struct {
 
 func (t *TreeNode) Insert(value int) error {
 
+	if t.val == 0 && t.left == nil && t.right == nil {
+		t.val = value
+	}
+
 	if t == nil {
 		return errors.New("This tree is nil")
 	}
