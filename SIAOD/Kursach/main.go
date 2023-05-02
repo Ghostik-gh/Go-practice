@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// Структура описывающая одну строчку заказа
 type Order struct {
 	N           int
 	DateOrder   string
@@ -21,6 +22,7 @@ type Order struct {
 	Total       int
 }
 
+// Структура всего заказа
 type OrderList struct {
 	list []Order
 	head Order
@@ -52,12 +54,13 @@ func main() {
 	revenue := data.Revenue()
 	fmt.Printf("revenue: %v\n", revenue)
 	data.PrintOrderList()
-	data.SortBy(1)
+	data.SortBy(1) // По количеству
 	data.PrintOrderList()
-	data.SortBy(2)
+	data.SortBy(2) // По итоговой стоимости
 	data.PrintOrderList()
 }
 
+// Добавляет Шапку таблицы
 func (data *OrderList) AddHead(s []string) {
 	var row Order
 	row.N, _ = strconv.Atoi(s[0])
@@ -70,7 +73,9 @@ func (data *OrderList) AddHead(s []string) {
 	data.head = row
 }
 
-func (data *OrderList) AddRow(s []string) { // Error
+// Валидирует переданную строку из csv файла
+// если ошибки отсутсвуют то добавляет в список заказов
+func (data *OrderList) AddRow(s []string) {
 	var row Order
 	row.N, _ = strconv.Atoi(s[0])
 	row.DateOrder = s[1]
@@ -88,6 +93,7 @@ func (data *OrderList) AddRow(s []string) { // Error
 
 /*
 Проверяет являются ли переданные данные валидными
+Check: отрицательные и нулевые числа недопустимы
 Check: итоговая сумма должна быть равна произведению
 Check: дата заказа не может быть позже текущей
 */
@@ -120,6 +126,7 @@ func (data *OrderList) Revenue() int {
 	return reven
 }
 
+// part of quickSort
 func partition(arr *[]Order, low, high, param int) int {
 	var pivot int
 	if param == 1 {
@@ -143,6 +150,7 @@ func partition(arr *[]Order, low, high, param int) int {
 	(*arr)[i], (*arr)[high] = (*arr)[high], (*arr)[i]
 	return i
 }
+
 func quickSort(arr *[]Order, low, high, param int) {
 	if low < high {
 		p := partition(arr, low, high, param)
@@ -152,19 +160,20 @@ func quickSort(arr *[]Order, low, high, param int) {
 }
 
 /*
-Сортирует в зависимости от передаваемого параметра
-1 - Amount
+Сортирует в зависимости от передаваемого параметра:
+1 - Amount,
 2 - Total
 */
 func (arr *OrderList) SortBy(param int) {
 	quickSort(&arr.list, 0, len(arr.list)-1, param)
 }
 
+// Печетает данные в виде таблицы
 func (data *OrderList) PrintOrderList() {
 	fmt.Printf("%4v | %-30v | %-10v | %6v | %-8v \n",
 		"ID", data.head.NameProduct, "Количество", "Цена за товар", "Итого")
 	for _, v := range data.list {
 		fmt.Printf("%4v | %-30v | %-10v | %-13v | %-8v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Total)
 	}
-	fmt.Println(strings.Repeat("=", 86))
+	fmt.Println(strings.Repeat("=", 80))
 }
