@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -24,12 +25,24 @@ type Order struct {
 
 // Структура всего заказа
 type OrderList struct {
-	list []Order
-	head Order
+	list        []Order
+	head        Order
+	revenue     int
+	maxAmount   int
+	idMaxAmount int
+	maxTotal    int
+	idMaxTotal  int
 }
 
 func main() {
-	file, err := os.Open("table.csv")
+	data := ReadCSVFile("table.csv")
+	data.CreateReport()
+}
+
+// Создает csv.Reader который считывает данные из файла
+func ReadCSVFile(s string) OrderList {
+
+	file, err := os.Open(s)
 	if err != nil {
 		panic("Файл не открывается \n" + err.Error())
 	}
@@ -50,14 +63,7 @@ func main() {
 		}
 		data.AddRow(record)
 	}
-
-	revenue := data.Revenue()
-	fmt.Printf("revenue: %v\n", revenue)
-	data.PrintOrderList()
-	data.SortBy(1) // По количеству
-	data.PrintOrderList()
-	data.SortBy(2) // По итоговой стоимости
-	data.PrintOrderList()
+	return data
 }
 
 // Добавляет Шапку таблицы
@@ -87,6 +93,16 @@ func (data *OrderList) AddRow(s []string) {
 	err := row.Valid()
 	if err != nil {
 		panic(err)
+	}
+	data.revenue += row.Total
+
+	if data.maxTotal <= row.Total {
+		data.maxTotal = row.Total
+		data.idMaxTotal = row.N
+	}
+	if data.maxAmount <= row.Amount {
+		data.maxAmount = row.Amount
+		data.idMaxAmount = row.N
 	}
 	data.list = append(data.list, row)
 }
@@ -161,6 +177,7 @@ func quickSort(arr *[]Order, low, high, param int) {
 
 /*
 Сортирует в зависимости от передаваемого параметра:
+0 - ID,
 1 - Amount,
 2 - Total
 */
@@ -176,4 +193,40 @@ func (data *OrderList) PrintOrderList() {
 		fmt.Printf("%4v | %-30v | %-10v | %-13v | %-8v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Total)
 	}
 	fmt.Println(strings.Repeat("=", 80))
+}
+
+func (arr *OrderList) Search(key int) int { //(int, error)
+	r := -1
+	start := 0
+	end := len(arr.list) - 1
+	for start <= end {
+		mid := (start + end) / 2
+		if arr.list[mid].N == key {
+			r = mid
+			break
+		} else if arr.list[mid].N < key {
+			start = mid + 1
+		} else if arr.list[mid].N > key {
+			end = mid - 1
+		}
+	}
+	return r
+}
+
+func (data *OrderList) CreateReport() {
+
+	fmt.Printf("Итоговая выручка магазина составила: %v\n", data.revenue)
+	fmt.Printf("Продано больше всего: %v\n", data.list[data.Search(data.idMaxAmount)])
+	fmt.Printf("Наибольшая выручка от товара: %v\n", data.list[data.Search(data.idMaxTotal)])
+	data.SortBy(2)
+	data.PrintOrderList()
+	data.Procents()
+
+}
+
+func (data *OrderList) Procents() {
+	for _, v := range data.list {
+		procent := float64(v.Total) / float64(data.revenue) * 100
+		fmt.Printf("%-30v: %5.2f%% |%s%s|\n", v.NameProduct, procent, strings.Repeat("=", int(math.Round(procent))), strings.Repeat(".", 100-int(math.Round(procent))))
+	}
 }
