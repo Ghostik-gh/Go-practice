@@ -123,6 +123,6 @@ func (arr *OrderList) SortByAmount() {
 
 func (data *OrderList) PrintOrderList() {
 	for _, v := range data.list {
-		fmt.Printf("%v | %v | Amount: %v | Price: %v | Total: %v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Sum)
+		fmt.Printf("%v | %-30v | Amount: %4v | Price: %6v | Total: %8v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Sum)
 	}
 }
