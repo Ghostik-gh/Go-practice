@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -78,8 +79,9 @@ func (data *OrderList) AddRow(s []string) { // Error
 	row.Amount, _ = strconv.Atoi(s[4])
 	row.PriceForOne, _ = strconv.Atoi(s[5])
 	row.Total, _ = strconv.Atoi(s[6])
-	if !row.Valid() {
-		panic("Data is Wrong")
+	err := row.Valid()
+	if err != nil {
+		panic(err)
 	}
 	data.list = append(data.list, row)
 }
@@ -89,15 +91,24 @@ func (data *OrderList) AddRow(s []string) { // Error
 Check: итоговая сумма должна быть равна произведению
 Check: дата заказа не может быть позже текущей
 */
-func (x *Order) Valid() bool {
+func (x *Order) Valid() error {
+	if x.Amount <= 0 {
+		return errors.New("Отрицательное или нулевое количество \nID: " + strconv.Itoa(x.N))
+	}
+	if x.PriceForOne <= 0 {
+		return errors.New("Отрицательная или нулевая цена \nID: " + strconv.Itoa(x.N))
+	}
+	if x.Total <= 0 {
+		return errors.New("Отрицательный или нулевой итог \nID: " + strconv.Itoa(x.N))
+	}
 	if x.Amount*x.PriceForOne != x.Total {
-		return false
+		return errors.New("Неверно посчитана итоговая цена, либо опечатка в одном из трех столбцов \nID: " + strconv.Itoa(x.N))
 	}
 	dateOrder, _ := time.Parse("01.02.2022", x.DateOrder)
 	if dateOrder.After(time.Now()) {
-		return false
+		return errors.New("Дата продажи позже текущей \nID: " + strconv.Itoa(x.N))
 	}
-	return true
+	return nil
 }
 
 // Считает общую выручку магазина
