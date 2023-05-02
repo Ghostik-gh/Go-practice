@@ -18,6 +18,10 @@ type Order struct {
 	Sum         int
 }
 
+type OrderList struct {
+	list []Order
+}
+
 func main() {
 	file, err := os.Open("table.csv")
 	if err != nil {
@@ -30,21 +34,23 @@ func main() {
 	reader.Comma = ';'
 	reader.TrimLeadingSpace = true
 
-	data := []Order{}
+	data := OrderList{}
 	record, e := reader.Read()
 	for {
 		record, e = reader.Read()
 		if e != nil {
 			break
 		}
-		data = append(data, AddRow(record))
+		data.list = append(data.list, AddRow(record))
 	}
 
-	revenue := Revenue(&data)
+	revenue := data.Revenue()
 	fmt.Printf("revenue: %v\n", revenue)
 
-	fmt.Printf("quickSortStart(tmp): %v\n", quickSortStart(data))
-
+	data.SortByAmount()
+	// quickSortStart(&data.list)
+	fmt.Printf("data: %v\n", data)
+	data.PrintOrderList()
 }
 
 func AddRow(s []string) Order { // Error
@@ -78,36 +84,45 @@ func (x *Order) Valid() bool {
 	return true
 }
 
-func Revenue(data *[]Order) int {
+func (data *OrderList) Revenue() int {
 	reven := 0
-	for _, v := range *data {
+	for _, v := range data.list {
 		reven += v.Sum
 	}
 	return reven
 }
 
-func partition(arr []Order, low, high int) ([]Order, int) {
-	pivot := arr[high].Amount
+func partition(arr *[]Order, low, high int) int {
+	pivot := (*arr)[high].Amount
 	i := low
 	for j := low; j < high; j++ {
-		if arr[j].Amount < pivot {
-			arr[i], arr[j] = arr[j], arr[i]
+		if (*arr)[j].Amount < pivot {
+			(*arr)[i], (*arr)[j] = (*arr)[j], (*arr)[i]
 			i++
 		}
 	}
-	arr[i], arr[high] = arr[high], arr[i]
-	return arr, i
+	(*arr)[i], (*arr)[high] = (*arr)[high], (*arr)[i]
+	return i
 }
-func quickSort(arr []Order, low, high int) []Order {
+func quickSort(arr *[]Order, low, high int) {
 	if low < high {
 		var p int
-		arr, p = partition(arr, low, high)
-		arr = quickSort(arr, low, p-1)
-		arr = quickSort(arr, p+1, high)
+		p = partition(arr, low, high)
+		quickSort(arr, low, p-1)
+		quickSort(arr, p+1, high)
 	}
-	return arr
 }
 
-func quickSortStart(arr []Order) []Order {
-	return quickSort(arr, 0, len(arr)-1)
+// func quickSortStart(arr *[]Order) {
+// 	quickSort(arr, 0, len(*arr)-1)
+// }
+
+func (arr *OrderList) SortByAmount() {
+	quickSort(&arr.list, 0, len(arr.list)-1)
+}
+
+func (data *OrderList) PrintOrderList() {
+	for _, v := range data.list {
+		fmt.Printf("%v | %v | Amount: %v | Price: %v | Total: %v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Sum)
+	}
 }
