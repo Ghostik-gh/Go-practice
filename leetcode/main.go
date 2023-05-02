@@ -1,50 +1,35 @@
 package main
 
-import (
-	"fmt"
-	"math"
-)
+import "fmt"
 
 func main() {
-
-	fmt.Printf("longestPalindromeSubseq(): %v\n", longestPalindromeSubseq("asss"))
+	fmt.Printf("average(): %v\n", average([]int{4000, 3000, 1000, 2000}))
 
 }
+func average(salary []int) float64 {
+	min := salary[0]
+	max := salary[0]
+	sum := 0.
+	for _, v := range salary {
+		min = Min(min, v)
+		max = Max(max, v)
+		sum += float64(v)
+	}
+	fmt.Printf("sum: %v\n", sum)
 
-func longestPalindromeSubseq(s string) int {
-	dp := [][]float64{}
-	for i := 0; i < len(s); i++ {
-		tmp := make([]float64, len(s))
-		dp = append(dp, tmp)
-	}
-	for i := 0; i < len(s); i++ {
-		dp[i][i] = 1
-	}
-	for i := 0; i < len(s); i++ {
-		for j := i - 1; j >= 0; j-- {
-			if s[i] == s[j] {
-				dp[i][j] = dp[i-1][j+1] + 2
-			} else {
-				dp[i][j] = math.Max(dp[i-1][j], dp[i][j+1])
-			}
-		}
-	}
-
-	return int(dp[len(s)-1][0])
+	return (sum - float64(min) - float64(max)) / float64(len(salary)-2)
 }
 
-// func isPalindrome(s string) bool {
-
-// 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
-// 		if s[i] != s[j] {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
-
-func PrDp(dp [][]float64) {
-	for i := 0; i < len(dp); i++ {
-		fmt.Printf("dp: %v\n", dp[i])
+func Min(x, y int) int {
+	if x < y {
+		return x
 	}
+	return y
+}
+
+func Max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
 }
