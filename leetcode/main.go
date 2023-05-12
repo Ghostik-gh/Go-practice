@@ -1,35 +1,53 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func main() {
-	fmt.Printf("average(): %v\n", average([]int{4000, 3000, 1000, 2000}))
+	fmt.Printf("findDiff(): %v\n", findDifference([]int{1, 2, 3, 3}, []int{1, 1, 2, 2}))
 
 }
-func average(salary []int) float64 {
-	min := salary[0]
-	max := salary[0]
-	sum := 0.
-	for _, v := range salary {
-		min = Min(min, v)
-		max = Max(max, v)
-		sum += float64(v)
+func findDifference(nums1 []int, nums2 []int) [][]int {
+	ans := [][]int{[]int{}, []int{}}
+	sort.Slice(nums1, func(i, j int) bool {
+		return nums1[i] <= nums1[j]
+	})
+	sort.Slice(nums2, func(i, j int) bool {
+		return nums2[i] <= nums2[j]
+	})
+	prev := -100000
+	for _, v := range nums1 {
+		if v == prev {
+			continue
+		}
+		flag := true
+		for _, v2 := range nums2 {
+			if v == v2 {
+				flag = false
+			}
+		}
+		if flag {
+			ans[0] = append(ans[0], v)
+			prev = v
+		}
 	}
-	fmt.Printf("sum: %v\n", sum)
-
-	return (sum - float64(min) - float64(max)) / float64(len(salary)-2)
-}
-
-func Min(x, y int) int {
-	if x < y {
-		return x
+	for _, v := range nums2 {
+		if v == prev {
+			continue
+		}
+		flag := true
+		for _, v2 := range nums1 {
+			if v == v2 {
+				flag = false
+			}
+		}
+		if flag {
+			ans[1] = append(ans[1], v)
+			prev = v
+		}
 	}
-	return y
-}
 
-func Max(x, y int) int {
-	if x < y {
-		return y
-	}
-	return x
+	return ans
 }
