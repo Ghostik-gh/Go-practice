@@ -6,7 +6,7 @@ import (
 
 type elem struct {
 	key   string
-	value string
+	value any
 	next  *elem
 }
 
@@ -34,7 +34,7 @@ func HashFunc(key string, size int) int {
 	return id
 }
 
-func (m *myMap) Insert(key, value string) {
+func (m *myMap) Insert(key string, value any) {
 	index := HashFunc(key, m.size)
 	temp1 := &elem{key, value, nil}
 
@@ -49,7 +49,7 @@ func (m *myMap) Insert(key, value string) {
 	}
 }
 
-func (m *myMap) Search(key string) string {
+func (m *myMap) Search(key string) any {
 	index := HashFunc(key, m.size)
 	if m.list[index].head == nil {
 		return "not found"
@@ -88,11 +88,11 @@ func (m *myMap) Delete(key string) {
 func main() {
 	size := 10
 	myMap := NewList(size)
-	myMap.Insert("a", "1")
-	myMap.Insert("j", "2")
-	myMap.Insert("x", "3")
-	myMap.Insert("o", "4")
-	myMap.Insert("e", "5")
+	myMap.Insert("a", "hello")
+	myMap.Insert("j", []int{1, 3})
+	myMap.Insert("x", rune(322))
+	myMap.Insert("o", 4)
+	myMap.Insert("e", 5.012309)
 
 	myMap.Delete("e")
 
