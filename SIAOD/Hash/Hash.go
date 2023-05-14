@@ -2,58 +2,106 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 )
 
-var size = 5
-var hashTable = make([]int, size)
+type elem struct {
+	key   string
+	value string
+	next  *elem
+}
+
+type LinkedList struct {
+	head   *elem
+	length int
+}
+
+type myMap struct {
+	size int
+	list []LinkedList
+}
+
+func NewList(size int) myMap {
+	list := make([]LinkedList, size)
+	return myMap{size: size, list: list}
+}
+
+func HashFunc(key string, size int) int {
+	id := 0
+	for i, v := range key {
+		id += int(v) * (i + 0) * 13
+		id %= size
+	}
+	return id
+}
+
+func (m *myMap) Insert(key, value string) {
+	index := HashFunc(key, m.size)
+	temp1 := &elem{key, value, nil}
+
+	if m.list[index].head == nil {
+		m.list[index].head = temp1
+	} else {
+		temp2 := m.list[index].head
+		for temp2.next != nil {
+			temp2 = temp2.next
+		}
+		temp2.next = temp1
+	}
+}
+
+func (m *myMap) Search(key string) string {
+	index := HashFunc(key, m.size)
+	if m.list[index].head == nil {
+		return "not found"
+	}
+	temp1 := m.list[index].head
+	for temp1.next != nil {
+		if temp1.key == key {
+			return temp1.value
+		}
+		temp1 = temp1.next
+	}
+	if temp1.key == key {
+		return temp1.value
+	}
+	return "not found"
+}
+
+func (m *myMap) Delete(key string) {
+	index := HashFunc(key, m.size)
+	// Delete Head
+	if m.list[index].head.key == key {
+		m.list[index].head = m.list[index].head.next
+	}
+	// Delete at middle and tail
+	temp1 := m.list[index].head
+	temp2 := m.list[index].head
+	for temp1.key != key && temp1.next != nil {
+		temp2 = temp1
+		temp1 = temp1.next
+	}
+	if temp1.key == key {
+		temp2.next = temp1.next
+	}
+}
 
 func main() {
-	insert(9, 1)
-	insert(21, 3)
-	insert(23, 7)
-	insert(4, 11)
-	insert(99, 12)
-	hashFunctionRand()
-	fmt.Printf("hashTable: %v\n", hashTable)
-	// fmt.Printf("search(): %v\n", search(11))
+	size := 10
+	myMap := NewList(size)
+	myMap.Insert("a", "1")
+	myMap.Insert("j", "2")
+	myMap.Insert("x", "3")
+	myMap.Insert("o", "4")
+	myMap.Insert("e", "5")
 
-	// Коллизия
-	// insert(12, 923, &hashTable)
-}
+	myMap.Delete("e")
 
-// Простая функция кэширования
-func hashFunction(x int) int {
-	return x % (size)
-}
+	fmt.Printf("myMap.list[0].head: %v\n", myMap.list[0].head)
+	fmt.Printf("myMap.list[0].head: %v\n", myMap.list[0].head.next)
+	fmt.Printf("myMap.list[0].head: %v\n", myMap.list[0].head.next.next)
+	fmt.Printf("myMap.list[0].head: %v\n", myMap.list[0].head.next.next.next)
+	fmt.Printf("myMap.list[0].head: %v\n", myMap.list[0].head.next.next.next.next)
 
-func hashFunctionRand() {
-	var random = rand.Intn(99) + 1
-	for i, v := range hashTable {
-		hashTable[i] = (v * random) % (100)
-	}
-}
-
-func insert(key int, value int) {
-	index := hashFunction(key)
-	for hashTable[index] != 0 {
-		index = (index + 1) % size
-	}
-	hashTable[index] = value
-	fmt.Printf("hashTable: %v\n", hashTable)
-}
-
-func search(key int) int {
-	index := hashFunction(key)
-	startIndex := index
-	for hashTable[index] != 0 {
-		if hashTable[index] != 0 {
-			return hashTable[index]
-		}
-		index = (index + 1) % size
-		if index == startIndex {
-			return -1
-		}
-	}
-	return -1
+	value := myMap.Search("a")
+	fmt.Println(value)
 }
