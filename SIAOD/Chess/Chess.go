@@ -15,13 +15,12 @@ func main() {
 	count := 0
 	tries := 0
 	coords := []Coords{}
-	board := [][]int{}
 	for count != 8 {
 		tries++
 		ans := Coords{}
 		coords = []Coords{}
 		count = 0
-		board = [][]int{}
+		board := [][]int{}
 		for i := 0; i < 8; i++ {
 			board = append(board, []int{0, 0, 0, 0, 0, 0, 0, 0})
 		}
@@ -58,7 +57,7 @@ func main() {
 		fmt.Printf("ans: %v\n", coords)
 	}
 
-	board = [][]int{}
+	board := [][]int{}
 	for i := 0; i < 8; i++ {
 		board = append(board, []int{0, 0, 0, 0, 0, 0, 0, 0})
 	}

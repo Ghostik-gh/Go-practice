@@ -11,8 +11,7 @@ type elem struct {
 }
 
 type LinkedList struct {
-	head   *elem
-	length int
+	head *elem
 }
 
 type myMap struct {

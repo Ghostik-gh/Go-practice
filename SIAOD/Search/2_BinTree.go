@@ -18,11 +18,11 @@ func (t *TreeNode) Insert(value int) error {
 	}
 
 	if t == nil {
-		return errors.New("This tree is nil")
+		return errors.New("this tree is nil")
 	}
 
 	if t.val == value {
-		return errors.New("This node value already exists")
+		return errors.New("this node value already exists")
 	}
 
 	if t.val > value {
