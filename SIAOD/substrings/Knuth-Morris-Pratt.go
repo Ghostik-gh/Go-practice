@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
 // алгоритм Кнута-Морриса-Пратта
-func SubstrFirst(fs FindSubstr) int {
+func KnuthMorrisPratt(fs FindSubstr) int {
 
 	var (
 		k = 0
@@ -24,7 +23,6 @@ func SubstrFirst(fs FindSubstr) int {
 	}
 
 	pi := prefixFunc(s)
-	fmt.Printf("pi: %v\n", pi)
 	for k < len(t) {
 		if l == len(s) {
 			return k - l
