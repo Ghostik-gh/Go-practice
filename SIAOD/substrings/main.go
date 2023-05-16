@@ -17,12 +17,15 @@ func New(text, subst string, reg bool) FindSubstr {
 }
 
 func main() {
-	text := "cojakhsfjcsudpokj"
+	text := ""
 	for i := 0; i < 100000; i++ {
-		text += "some"
+		text += "123123"
 	}
-	text += "someg"
-	substr := "someg"
+	text += "1231239"
+	for i := 0; i < 100000; i++ {
+		text += "123123"
+	}
+	substr := "1231239"
 	regSens := false
 	find := New(text, substr, regSens)
 	start := time.Now()
