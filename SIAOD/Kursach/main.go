@@ -126,7 +126,14 @@ func (x *Order) Valid() error {
 	if x.Amount*x.PriceForOne != x.Total {
 		return errors.New("Неверно посчитана итоговая цена, либо опечатка в одном из трех столбцов \nID: " + strconv.Itoa(x.N))
 	}
-	dateOrder, _ := time.Parse(time.RFC3339Nano, x.DateOrder)
+	data := strings.Split(x.DateOrder, ".")
+	for i, v := range data {
+		data[i] = strings.TrimSpace(v)
+	}
+	year, _ := strconv.Atoi(data[2])
+	month, _ := strconv.Atoi(data[1])
+	day, _ := strconv.Atoi(data[0])
+	dateOrder := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.Local)
 	if dateOrder.After(time.Now()) {
 		return errors.New("Дата продажи позже текущей \nID: " + strconv.Itoa(x.N))
 	}
