@@ -115,3 +115,31 @@ func TestSort(t *testing.T) {
 		require.Equal(t, tCase.OrderList1, tCase.OrderList2)
 	}
 }
+
+func TestAddRow(t *testing.T) {
+	cases := []struct {
+		name string
+		in   []string
+		out  *OrderList
+	}{
+		{
+			name: "",
+			in:   []string{"1", "06.01.2004", "somename", "cat", "1", "10", "10"},
+			out: &OrderList{
+				list: []Order{
+					{1, "06.01.2004", "somename", "cat", 1, 10, 10},
+				},
+				revenue:     10,
+				idMaxAmount: 1,
+				idMaxTotal:  1,
+				maxAmount:   1,
+				maxTotal:    10,
+			},
+		},
+	}
+	for _, tCase := range cases {
+		ordLst := &OrderList{}
+		ordLst.AddRow(tCase.in)
+		require.Equal(t, ordLst, tCase.out)
+	}
+}
