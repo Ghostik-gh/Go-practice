@@ -24,12 +24,19 @@ type Order struct {
 }
 
 type HeadOrder struct {
+	N           string
+	DateOrder   string
+	NameProduct string
+	Category    string
+	Amount      string
+	PriceForOne string
+	Total       string
 }
 
 // Структура всего заказа
 type OrderList struct {
 	list        []Order
-	head        Order
+	head        HeadOrder
 	revenue     int
 	maxAmount   int
 	idMaxAmount int
@@ -66,27 +73,28 @@ func ReadCSVFile(fileName string) OrderList {
 		if e == io.EOF {
 			break
 		}
-		data.AddRow(record)
+		err := data.AddRow(record)
+		fmt.Println("информация из строки не добавилась", err)
 	}
 	return data
 }
 
 // Добавляет Шапку таблицы
 func (data *OrderList) AddHead(s []string) {
-	var row Order
-	row.N, _ = strconv.Atoi(s[0])
+	var row HeadOrder
+	row.N = s[0]
 	row.DateOrder = s[1]
 	row.NameProduct = s[2]
 	row.Category = s[3]
-	row.Amount, _ = strconv.Atoi(s[4])
-	row.PriceForOne, _ = strconv.Atoi(s[5])
-	row.Total, _ = strconv.Atoi(s[6])
+	row.Amount = s[4]
+	row.PriceForOne = s[5]
+	row.Total = s[6]
 	data.head = row
 }
 
 // Валидирует переданную строку из csv файла
 // если ошибки отсутсвуют то добавляет в список заказов
-func (data *OrderList) AddRow(s []string) {
+func (data *OrderList) AddRow(s []string) error {
 	var row Order
 	row.N, _ = strconv.Atoi(s[0])
 	row.DateOrder = s[1]
@@ -97,7 +105,7 @@ func (data *OrderList) AddRow(s []string) {
 	row.Total, _ = strconv.Atoi(s[6])
 	err := row.Valid()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	data.revenue += row.Total
 
@@ -110,6 +118,7 @@ func (data *OrderList) AddRow(s []string) {
 		data.idMaxAmount = row.N
 	}
 	data.list = append(data.list, row)
+	return nil
 }
 
 /*
@@ -199,12 +208,12 @@ func (arr *OrderList) SortBy(param int) {
 
 // Печетает данные в виде таблицы
 func (data *OrderList) PrintOrderList() {
-	fmt.Printf("%4v | %-30v | %-10v | %6v | %-8v \n",
-		"ID", data.head.NameProduct, "Количество", "Цена за товар", "Итого")
+	fmt.Printf("%15v | %-30v | %-15v | %13v | %-8v \n",
+		data.head.N, data.head.NameProduct, data.head.Amount, data.head.PriceForOne, data.head.Total)
 	for _, v := range data.list {
-		fmt.Printf("%4v | %-30v | %-10v | %-13v | %-8v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Total)
+		fmt.Printf("%15v | %-30v | %-17v | %-15v | %-8v\n", v.N, v.NameProduct, v.Amount, v.PriceForOne, v.Total)
 	}
-	fmt.Println(strings.Repeat("=", 80))
+	fmt.Println(strings.Repeat("=", 100))
 }
 
 func (arr *OrderList) Search(key int) int { //(int, error)
