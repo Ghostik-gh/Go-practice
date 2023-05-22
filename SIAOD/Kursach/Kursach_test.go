@@ -4,6 +4,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -142,4 +143,13 @@ func TestAddRow(t *testing.T) {
 		ordLst.AddRow(tCase.in)
 		require.Equal(t, ordLst, tCase.out)
 	}
+}
+
+func TestReadCSVPanic(t *testing.T) {
+	tCase := "NoTable.csv"
+	require.Panics(t, assert.PanicTestFunc(func() {
+		{
+			ReadCSVFile(tCase)
+		}
+	}))
 }

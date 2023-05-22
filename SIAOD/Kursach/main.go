@@ -23,6 +23,9 @@ type Order struct {
 	Total       int
 }
 
+type HeadOrder struct {
+}
+
 // Структура всего заказа
 type OrderList struct {
 	list        []Order
@@ -40,11 +43,13 @@ func main() {
 }
 
 // Создает csv.Reader который считывает данные из файла
-func ReadCSVFile(s string) OrderList {
+// И возвращает объект OrderList
+func ReadCSVFile(fileName string) OrderList {
 
-	file, err := os.Open(s)
+	file, err := os.Open(fileName)
+
 	if err != nil {
-		panic("Файл не открывается \n" + err.Error())
+		panic("Файл не открывается: " + err.Error())
 	}
 	defer file.Close()
 
